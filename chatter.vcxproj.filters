@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\params.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdafx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\chat\client.cpp">
+      <Filter>src\chat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\chat\member.cpp">
+      <Filter>src\chat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\chat\message.cpp">
+      <Filter>src\chat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\chat\room.cpp">
+      <Filter>src\chat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\chat\server.cpp">
+      <Filter>src\chat</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\params.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stdafx.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\chat\client.hpp">
+      <Filter>src\chat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\chat\member.hpp">
+      <Filter>src\chat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\chat\message.hpp">
+      <Filter>src\chat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\chat\room.hpp">
+      <Filter>src\chat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\chat\server.hpp">
+      <Filter>src\chat</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{78572c9b-708e-42bf-8bec-43c0a6cfb19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\chat">
+      <UniqueIdentifier>{6d9c8149-5c86-46d4-a313-36be05decd90}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
