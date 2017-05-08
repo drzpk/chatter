@@ -19,6 +19,7 @@
 #include <vector>
 
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 //#define ASIO_STANDALONE
 #define _WIN32_WINNT 0x0501

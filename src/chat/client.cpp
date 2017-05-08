@@ -123,6 +123,12 @@ void Client::displayMessage(Message* message) {
 		stop();
 		break;
 	}
+	case MessageType::WRITE:
+		write(message->getContent());
+		break;
+	case MessageType::DEBUG:
+		debugWrite(message->getContent());
+		break;
 	default:
 		//todo:
 		break;

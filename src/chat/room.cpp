@@ -81,6 +81,17 @@ void Room::broadcastMessage(Message* message) {
 	_locker.unlock();
 }
 
+void Room::write(const std::string& content, bool debug, asio::ip::tcp::socket* socket) {
+	Message* msg = new Message(debug ? MessageType::DEBUG : MessageType::WRITE);
+	if (socket)
+		msg->setContent("[" + socket->remote_endpoint().address().to_string() + "] " + content);
+	else
+		msg->setContent(content);
+	_locker.lock();
+	feedback_queue->push(msg);
+	_locker.unlock();
+}
+
 void Room::_worker() {
 	//todo: okreœlenie maksymalnej iloœci u¿ytkowników na serwerze
     while (work) {
@@ -112,16 +123,46 @@ void Room::_worker() {
 
 				Member* member = *pos;
 				connecting_members.erase(pos);
+				
+				//sprawdzenie wersji wiadomoœci
+				std::string version = msg->getMeta();
+				if (version.compare(Message::MSG_VER)) {
+					_locker.unlock();
+					Message disconnectMsg(MessageType::DISCONNECT);
+					disconnectMsg.setContent("uzywana wersja klienta jest niekompatybilna z serwerem");
+					member->sendMessageSync(disconnectMsg);
+					delete member;
 
-				if (msg->getContent().size() < 5 || msg->getContent().size() > 16) {
-					//todo: dodanie informacji debugowania o nieprawid³owym nicku
+					write("odrzucono klienta z powodu niezgodnoœci wersji", true, socket);
+					char buff[64] = { 0 };
+					sprintf_s(buff, 64, "wersja klienta: %s, wymagana wersja: %s", version.c_str(), Message::MSG_VER);
+					write(std::string(buff), true);
 
-					//b³¹d, brak nicka
+					break;
+				}
+
+				std::string nick = msg->getContent();
+				if (nick.size() < 5 || nick.size() > 16) {
 					_locker.unlock();
 					Message disconnectMsg(MessageType::DISCONNECT);
 					disconnectMsg.setContent("Nick musi miec od 5 do 16 znakow.");
 					member->sendMessageSync(disconnectMsg);
 					delete member;
+
+					write("proba polaczenia z niepoprawna dlugoscia nicka ("
+						+ std::string(lexical_cast<std::string>(nick.size())), true, socket);
+
+					break;
+				}
+				if (std::any_of(nick.cbegin(), nick.cend(), [](char c) { return c < 32; })) {
+					_locker.unlock();
+					Message disconnectMsg(MessageType::DISCONNECT);
+					disconnectMsg.setContent("Nick zawiera niedozwolone znaki");
+					member->sendMessageSync(disconnectMsg);
+					delete member;
+
+					write("proba polaczenia z nickiem zawierajacym niedozwolone znaki", true, socket);
+
 					break;
 				}
 

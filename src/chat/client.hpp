@@ -4,8 +4,6 @@
 #include "../stdafx.hpp"
 #include "message.hpp"
 
-#include <boost/lexical_cast.hpp>
-
 #ifdef _WIN32
 #include <conio.h>
 #else

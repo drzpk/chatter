@@ -8,8 +8,9 @@
 	## Schematy komunikacji
 	>> 1. Rozpoczynanie połączenia
 	Po udanym połączeniu się z serwerem, klient wysyła do serwera wiadomość CONNECT,
-	zawierającą nick klienta (pole content). W przypadku braku wysłania takiej
-	wiadomości, klient zostanie rozłączony z serwerem po upływie określonego czasu.
+	zawierającą nick klienta (pole content) oraz wersję wiadomości (pole meta).
+	W przypadku braku wysłania takiej wiadomości, klient zostanie rozłączony z serwerem
+	po upływie określonego czasu.
 	----------------------------------
 
     ## Opisy poszczególnych wiadomości.
@@ -64,6 +65,7 @@ public:
 
 private:
 	void broadcastMessage(Message* message);
+	void write(const std::string& content, bool debug = false, asio::ip::tcp::socket* socket = 0);
     void _worker();
 	std::vector<Member*>::iterator _get_member_by_socket(std::vector<Member*>& v, asio::ip::tcp::socket* socket);
 };

@@ -68,7 +68,11 @@ enum MessageType {
 	DISCONNECT = 2,
 	ECHO = 3,
 	CHAT = 4,
-	SERVER = 5
+	SERVER = 5,
+
+	//poniższe typy wiadomości są wewnętrzne, tj. nie będą wysyłane przez sieć.
+	WRITE = 10,
+	DEBUG = 11
 };
 
 #endif // MESSAGE_HPP_INCLUDED
