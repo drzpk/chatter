@@ -1,6 +1,7 @@
 #include "message.hpp"
 
 const char* Message::HEADER = "CHATTER";
+const char* Message::MSG_VER = "1";
 
 Message::Message(unsigned int code) {
     this->code = code;
@@ -11,14 +12,13 @@ unsigned int Message::getType() const {
 	return code;
 }
 
-Message::Message(const std::string& encoded) throw (std::invalid_argument&) {
+Message::Message(const std::string& encoded) /*throw (std::invalid_argument&)*/ {
     /*
-    oss << HEADER << DELIMITER
+     oss << HEADER << DELIMITER
 		<< code << DELIMITER
         << id << DELIMITER
-        << sender << DELIMITER
-        << meta << DELIMITER
         << content << DELIMITER
+		<< meta << DELIMITER
         << BRAKE;
     */
 
@@ -26,25 +26,20 @@ Message::Message(const std::string& encoded) throw (std::invalid_argument&) {
     std::string buffer;
 	std::stringstream ss(encoded);
     while (std::getline(ss, buffer, DELIMITER)) {
-        segments.push_back(buffer);
+		if (buffer.empty() || buffer[0] != BRAKE)
+			segments.push_back(buffer);
     }
 
-    if (segments.size() != 6 && segments.size() != 7)
+    if (segments.size() != 5)
         throw std::invalid_argument("Nieprawidlowa liczba segmentow w pakiecie.");
+	if (strcmp(segments[0].c_str(), HEADER))
+		throw std::invalid_argument("Niepoprawny naglowek wiadomosci");
 
-	//usuwanie naglowka
-	segments.erase(segments.begin());
-
-	//usuwanie znaku końca wiadomości, jeśli istnieje
-	if (segments[segments.size() - 1][0] == BRAKE)
-		segments.pop_back();
-
-    //błędy będą złapane w celu wygenerowania polskiego
-    //opisu błędu
+    //błędy będą złapane w celu wygenerowania polskiego opisu błędu
     try {
         using std::stoi;
-        code = stoi(segments[0]);
-        setId(stoi(segments[1]));
+        code = stoi(segments[1]);
+        setId(stoi(segments[2]));
     } catch (...) {
         throw std::invalid_argument("Niepoprawna składnia pakietu.");
     }
@@ -55,14 +50,14 @@ Message::Message(const std::string& encoded) throw (std::invalid_argument&) {
     case MessageType::DISCONNECT:
     case MessageType::ECHO:
     case MessageType::CHAT:
+	case MessageType::SERVER:
         break;
     default:
         throw std::invalid_argument("Niepoprawny kod wiadomości.");
     }
 
-    setSender(segments[2]);
-    setMeta(segments[3]);
-    setContent(segments[4]);
+	setContent(segments[3]);
+    setMeta(segments[4]);
 }
 
 void Message::setId(unsigned int id) {
@@ -74,7 +69,7 @@ unsigned int Message::getId() {
 }
 
 void Message::setSender(const std::string& sender) {
-    this->sender = sender.substr(0, MAX_SENDER_LENGTH);
+    this->sender = sender;
 }
 
 std::string Message::getSender() {
@@ -102,9 +97,8 @@ std::string Message::encode() const {
     oss << HEADER << DELIMITER
 		<< code << DELIMITER
         << id << DELIMITER
-        << sender << DELIMITER
-        << meta << DELIMITER
         << content << DELIMITER
+		<< meta << DELIMITER
         << BRAKE;
 
     return oss.str();

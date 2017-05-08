@@ -9,21 +9,29 @@ private:
     static const char DELIMITER = '\n';
 	static const char* HEADER;
 
+	// kod wiadomości oznaczający jej typ
     unsigned int code;
+	// identyfikator wiadomości
     unsigned int id;
+
+	// treść wiadomości
+	std::string content;
+	// dodatkowe dane wiadomości
+	std::string meta;
+
+	// nazwa autora wiadomości (nie wysyłana przez sieć)
     std::string sender;
-    std::string content;
-    std::string meta;
-	
+	// gniazdo sieciowe (użytek wewnętrzny)
 	asio::ip::tcp::socket* socket;
+
 public:
-    static const int MAX_SENDER_LENGTH = 12;
+	static const char* MSG_VER;
     static const int MAX_CONTENT_LENGTH = 128;
     static const int MAX_META_LENGTH = 32;
     static const char BRAKE = '\r';
 
     Message(unsigned int code);
-    Message(const std::string& encoded) throw (std::invalid_argument&);
+    Message(const std::string& encoded) /*throw (std::invalid_argument&)*/;
 
 	// Zwraca typ wiadomości
 	unsigned int getType() const;
@@ -44,11 +52,13 @@ public:
     void setMeta(const std::string& meta);
     std::string getMeta();
 
-    //  Koduje wiadomość w sposób umożliwiający jej wysłanie.
+    // Koduje wiadomość w sposób umożliwiający jej wysłanie.
     std::string encode() const;
 
+	// Ustawia gniazdo sieciowe wiadomości.
 	void setSocket(asio::ip::tcp::socket* socket);
 
+	// Zwraca gniazdo wiadomości lub 0, jeśli nie zostało ustawione.
 	asio::ip::tcp::socket* getSocket() const;
 };
 
