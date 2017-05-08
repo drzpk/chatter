@@ -18,7 +18,9 @@ std::mutex _locker;
 bool _debug = false;
 
 void print_usage(Params& params) {
-    std::cout << "Chatter - program do czatowania w sieciach LAN\n"
+	std::cout << "Chatter - program do czatowania w sieciach LAN\n"
+			<< "Autor: Dominik Rzepka\n"
+			<< "Wersja: " << VERSION << "\n"
             << "  Dostepne parametry:\n"
             << params.printParams(4);
 }
