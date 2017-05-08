@@ -34,4 +34,8 @@ using namespace boost;
 extern std::mutex _locker;
 extern bool _debug;
 
+//sta³e globalne
+#define MIN_NICK_LEN	5
+#define MAX_NICK_LEN	16
+
 #endif // STDAFX_HPP_INCLUDED

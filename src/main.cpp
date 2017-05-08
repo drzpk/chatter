@@ -19,7 +19,7 @@ bool _debug = false;
 
 void print_usage(Params& params) {
     std::cout << "Chatter - program do czatowania w sieciach LAN\n"
-            << "  Dostępne parametry:\n"
+            << "  Dostepne parametry:\n"
             << params.printParams(4);
 }
 
@@ -34,8 +34,8 @@ int main(int argc, char** argv) {
     //ustawienie parametrów
     Params params(false);
     params.addParameter(PARAM_SERVER, "s", "server", "startuje serwer czatu na komputerze", false);
-    params.addParameter(PARAM_CONNECT, "c", "connect", "podłącza się do istniejącego serwera", true);
-    params.addParameter(PARAM_NICK, "n", "nick", "ustawia nazwę użytkownika", true);
+    params.addParameter(PARAM_CONNECT, "c", "connect", "podlacza się do istniejącego serwera", true);
+    params.addParameter(PARAM_NICK, "n", "nick", "ustawia nazwe uzytkownika", true);
 	params.addParameter(PARAM_DEBUG, "d", "debug", "wlacza tryb debugowania (rozszerzonych wiadomosci)", false);
 	params.addParameter(PARAM_HELP, "h", "help", "wyswietla ten tekst pomocy", false);
 
@@ -61,6 +61,21 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
+	//testowanie nicka
+	std::string nick = params.getString(PARAM_NICK);
+	if (nick.length() < MIN_NICK_LEN) {
+		std::cerr << "Nick musi miec minimum " << MIN_NICK_LEN << " znaki/ow\n";
+		return 1;
+	}
+	else if (nick.length() > MAX_NICK_LEN) {
+		std::cerr << "Nick moze miec maksymalnie " << MAX_NICK_LEN << " znaki/ow\n";
+		return 1;
+	}
+	else if (std::any_of(nick.cbegin(), nick.cend(), [](char c) { return c < 32; })) {
+		std::cerr << "Nick moze zawierac tylko znaki wyzsze od 0x1F";
+		return 1;
+	}
+
 	//ustawienie trybu debugowania
 	_debug = params.hasParameter(PARAM_DEBUG);
 
@@ -73,12 +88,12 @@ int main(int argc, char** argv) {
 
 	if (params.hasParameter(PARAM_SERVER)) {
 		Server* server = new Server(&service, PORT);
-		server->start(params.getString(PARAM_NICK));
+		server->start(nick);
 		delete server;
 	}
 	else {
 		Client* client = new Client(&service);
-		client->start(params.getString(PARAM_CONNECT), PORT, params.getString(PARAM_NICK));
+		client->start(params.getString(PARAM_CONNECT), PORT, nick);
 		delete client;
 	}
 
