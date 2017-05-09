@@ -5,6 +5,9 @@
 #include "client.hpp"
 #include "room.hpp"
 
+#define MIN_CLIENTS		2
+#define MAX_CLIENTS		20
+
 class Server : public Client {
 private:
     asio::ip::tcp::acceptor* acceptor;
@@ -14,10 +17,12 @@ private:
 	Room* room;
 
 public:
-    // Tworzy nową instancję serwera. Jeśli dany port
-    // jest już zajęty, rzucany jest wyjątek.
-    // @arg portId numer portu
-    Server(asio::io_service* service, short portId) throw(std::invalid_argument);
+    // Tworzy nową instancję serwera. Jeśli wystąpił błąd,
+	// rzucany jest wyjątek
+    Server(asio::io_service* service, short portId) /*throw(std::invalid_argument)*/;
+
+	// Ustawia nową maksymalną liczbę klientów
+	void setMaxClients(unsigned int value) /*throw(std::invalid_argument)*/;
 
 	// uruchamia serwer i klienta
 	void start(const std::string& name);

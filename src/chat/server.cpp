@@ -13,6 +13,17 @@ Server::Server(asio::io_service* service, short portId) : Client(service) {
 	room = new Room(&queue);
 }
 
+void Server::setMaxClients(unsigned int value) {
+	if (work)
+		throw std::invalid_argument("Nie mozna zmienic liczby klientow po uruchomieniu serwera");
+	if (value < MIN_CLIENTS)
+		throw std::invalid_argument("Minimalna liczba klientow to " + lexical_cast<std::string>(MIN_CLIENTS));
+	if (value > MAX_CLIENTS)
+		throw std::invalid_argument("Maksymalna liczba klientow to " + lexical_cast<std::string>(MAX_CLIENTS));
+
+	room->setMaxClients(value);
+}
+
 void Server::start(const std::string& name) {
 	work = true;
 	_worker();

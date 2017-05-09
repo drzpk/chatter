@@ -47,9 +47,14 @@ private:
 	std::thread* worker_thread;
 
     bool work;
+	unsigned int max_clients = 1;
 public:
     Room(std::queue<Message*>* feedback_queue);
 	~Room();
+
+	// Ustawia maksymalną liczbę podłączonych klientów
+	// (włącznie z klientem lokalnym)
+	void setMaxClients(unsigned int max_clients);
 
     // Dodaje nowego członka do czatu.
     void addMember(asio::ip::tcp::socket* socket);

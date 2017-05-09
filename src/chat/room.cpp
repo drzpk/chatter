@@ -2,6 +2,7 @@
 
 Room::Room(std::queue<Message*>* feedback_queue) {
 	this->feedback_queue = feedback_queue;
+
     work = true;
     worker_thread = new std::thread(&Room::_worker, this);
 }
@@ -19,14 +20,16 @@ Room::~Room() {
 	}
 }
 
+void Room::setMaxClients(unsigned int max_clients) {
+	this->max_clients = max_clients;
+}
+
 void Room::addMember(asio::ip::tcp::socket* socket) {
 	//todo: wys³anie informacji o po³¹czeniu, np. wiadomoœæ powitalna
-
+	
 	Member* member = new Member(socket, &queue);
-	Message connMsg(MessageType::CONNECT);
-
-	//dodanie klienta do listy oczekuj¹cych
 	_locker.lock();
+	//dodanie klienta do listy oczekuj¹cych
 	connecting_members.push_back(member);
 	_locker.unlock();
 	std::thread t([this, member]() {
@@ -123,6 +126,18 @@ void Room::_worker() {
 
 				Member* member = *pos;
 				connecting_members.erase(pos);
+
+				if (max_clients == members.size() + 1) {
+					//serwer jest pe³ny
+					_locker.unlock();
+					Message disconnectMsg(MessageType::DISCONNECT);
+					disconnectMsg.setContent("Serwer jest pelny");
+					member->sendMessageSync(disconnectMsg);
+
+					write("rozlaczono z powodu pelnego serwera", true, socket);
+					delete member;
+					break;
+				}
 				
 				//sprawdzenie wersji wiadomoœci
 				std::string version = msg->getMeta();
@@ -131,9 +146,9 @@ void Room::_worker() {
 					Message disconnectMsg(MessageType::DISCONNECT);
 					disconnectMsg.setContent("uzywana wersja klienta jest niekompatybilna z serwerem");
 					member->sendMessageSync(disconnectMsg);
-					delete member;
 
 					write("odrzucono klienta z powodu niezgodnoœci wersji", true, socket);
+					delete member;
 					char buff[64] = { 0 };
 					sprintf_s(buff, 64, "wersja klienta: %s, wymagana wersja: %s", version.c_str(), Message::MSG_VER);
 					write(std::string(buff), true);
@@ -147,10 +162,10 @@ void Room::_worker() {
 					Message disconnectMsg(MessageType::DISCONNECT);
 					disconnectMsg.setContent("Nick musi miec od 5 do 16 znakow.");
 					member->sendMessageSync(disconnectMsg);
-					delete member;
 
 					write("proba polaczenia z niepoprawna dlugoscia nicka ("
 						+ std::string(lexical_cast<std::string>(nick.size())), true, socket);
+					delete member;
 
 					break;
 				}
@@ -159,9 +174,9 @@ void Room::_worker() {
 					Message disconnectMsg(MessageType::DISCONNECT);
 					disconnectMsg.setContent("Nick zawiera niedozwolone znaki");
 					member->sendMessageSync(disconnectMsg);
-					delete member;
 
 					write("proba polaczenia z nickiem zawierajacym niedozwolone znaki", true, socket);
+					delete member;
 
 					break;
 				}

@@ -6,6 +6,7 @@
 #define PARAM_SERVER    1
 #define PARAM_CONNECT   2
 #define PARAM_NICK      3
+#define PARAM_CLIENTS	4
 #define PARAM_DEBUG		9
 #define PARAM_HELP		10
 
@@ -38,6 +39,7 @@ int main(int argc, char** argv) {
     params.addParameter(PARAM_SERVER, "s", "server", "startuje serwer czatu na komputerze", false);
     params.addParameter(PARAM_CONNECT, "c", "connect", "podlacza się do istniejącego serwera", true);
     params.addParameter(PARAM_NICK, "n", "nick", "ustawia nazwe uzytkownika", true);
+	params.addParameter(PARAM_CLIENTS, "l", "clients", "ustawia maksymalna liczbe klientow", true);
 	params.addParameter(PARAM_DEBUG, "d", "debug", "wlacza tryb debugowania (rozszerzonych wiadomosci)", false);
 	params.addParameter(PARAM_HELP, "h", "help", "wyswietla ten tekst pomocy", false);
 
@@ -60,6 +62,10 @@ int main(int argc, char** argv) {
 	}
 	else if (params.hasParameter(PARAM_SERVER) && params.hasParameter(PARAM_CONNECT)) {
 		std::cerr << "Mozna wybrac tylko jeden tryb.";
+		return 1;
+	}
+	else if (params.hasParameter(PARAM_CLIENTS) && params.getInt(PARAM_CLIENTS) < 1) {
+		std::cerr << "Liczba klientow nie moze byc ujemna lub zerowa";
 		return 1;
 	}
 
@@ -88,16 +94,28 @@ int main(int argc, char** argv) {
 		service.run();
 	});
 
-	if (params.hasParameter(PARAM_SERVER)) {
-		Server* server = new Server(&service, PORT);
-		server->start(nick);
-		delete server;
-	}
-	else {
-		Client* client = new Client(&service);
-		client->start(params.getString(PARAM_CONNECT), PORT, nick);
-		delete client;
-	}
+	do {
+		if (params.hasParameter(PARAM_SERVER)) {
+			Server* server = new Server(&service, PORT);
+			if (params.hasParameter(PARAM_NICK)) {
+				try {
+					server->setMaxClients((unsigned int)params.getInt(PARAM_CLIENTS));
+				}
+				catch (const std::invalid_argument& e) {
+					std::cerr << e.what() << "\n";
+					delete server;
+					break;
+				}
+			}
+			server->start(nick);
+			delete server;
+		}
+		else {
+			Client* client = new Client(&service);
+			client->start(params.getString(PARAM_CONNECT), PORT, nick);
+			delete client;
+		}
+	} while (false);
 
 	service.stop();
 	thread.join();
