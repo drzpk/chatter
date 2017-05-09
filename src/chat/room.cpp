@@ -15,7 +15,8 @@ Room::~Room() {
 	closeMsg.setContent("serwer zostal zamkniety");
 	for (auto it = members.begin(); it != members.end(); it++) {
 		Member* member = *it;
-		member->sendMessageSync(closeMsg);
+		if (member->isRemote())
+			member->sendMessageSync(closeMsg);
 		delete member;
 	}
 }
@@ -250,7 +251,7 @@ void Room::_worker() {
 
 std::vector<Member*>::iterator Room::_get_member_by_socket(std::vector<Member*>& v, asio::ip::tcp::socket* socket) {
 	for (auto it = v.begin(); it != v.end(); it++) {
-		if ((*it)->getSocket() == socket)
+		if ((*it)->isRemote() && (*it)->getSocket() == socket)
 			return it;
 	}
 

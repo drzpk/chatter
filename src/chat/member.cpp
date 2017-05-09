@@ -16,9 +16,15 @@ Member::Member(const std::string& name) {
 }
 
 Member::~Member() {
-	socket->cancel();
-	socket->shutdown(socket->shutdown_receive);
-    socket->close();
+	if (!remote)
+		return;
+
+	try {
+		socket->cancel();
+		socket->shutdown(socket->shutdown_receive);
+		socket->close();
+	}
+	catch (...) {}
     delete socket;
 }
 
