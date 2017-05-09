@@ -16,6 +16,9 @@ class Client {
 protected:
 	asio::io_service* service;
 	bool work;
+
+	//nick klienta
+	std::string name;
 private:
     static const int TIMEOUT = 5;
 	static const char* PROMPT_PREFIX;
@@ -25,8 +28,6 @@ private:
 
 	asio::streambuf buffer;
 
-	//nick klienta
-	std::string name;
 	//aktualnie pisana wiadomosc
 	std::string pending_msg;
 

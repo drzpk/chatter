@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 	do {
 		if (params.hasParameter(PARAM_SERVER)) {
 			Server* server = new Server(&service, PORT);
-			if (params.hasParameter(PARAM_NICK)) {
+			if (params.hasParameter(PARAM_CLIENTS)) {
 				try {
 					server->setMaxClients((unsigned int)params.getInt(PARAM_CLIENTS));
 				}

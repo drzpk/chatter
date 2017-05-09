@@ -127,7 +127,7 @@ void Room::_worker() {
 				Member* member = *pos;
 				connecting_members.erase(pos);
 
-				if (max_clients == members.size() + 1) {
+				if (max_clients == members.size()) {
 					//serwer jest pe³ny
 					_locker.unlock();
 					Message disconnectMsg(MessageType::DISCONNECT);
@@ -138,7 +138,7 @@ void Room::_worker() {
 					delete member;
 					break;
 				}
-				
+
 				//sprawdzenie wersji wiadomoœci
 				std::string version = msg->getMeta();
 				if (version.compare(Message::MSG_VER)) {
@@ -156,6 +156,7 @@ void Room::_worker() {
 					break;
 				}
 
+				//sprawdzanie nicka
 				std::string nick = msg->getContent();
 				if (nick.size() < 5 || nick.size() > 16) {
 					_locker.unlock();
@@ -180,6 +181,24 @@ void Room::_worker() {
 
 					break;
 				}
+
+				bool br = false;
+				for (auto m : members) {
+					if (!m->getName().compare(nick)) {
+						_locker.unlock();
+						Message disconnectMsg(MessageType::DISCONNECT);
+						disconnectMsg.setContent("Ten nick jest uzywany przez innego klienta");
+						member->sendMessageSync(disconnectMsg);
+
+						write("proba polaczenia z zajetym nickiem", true, socket);
+						delete member;
+
+						br = true;
+						break;
+					}
+				}
+				if (br)
+					break;
 
 				//dodanie klienta do listy
 				member->setName(msg->getContent());

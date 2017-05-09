@@ -64,6 +64,7 @@ void Client::start(const std::string& ip, short port, const std::string& name) {
 			//wysłanie nicku do serwera
 			Message* msg = new Message(MessageType::CONNECT);
 			msg->setContent(name);
+			msg->setMeta(Message::MSG_VER);
 			//oczekiwanie na serwer
 			std::this_thread::sleep_for(std::chrono::milliseconds(300));
 			sendMessage(msg);

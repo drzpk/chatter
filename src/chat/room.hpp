@@ -47,7 +47,7 @@ private:
 	std::thread* worker_thread;
 
     bool work;
-	unsigned int max_clients = 1;
+	unsigned int max_clients = 5;
 public:
     Room(std::queue<Message*>* feedback_queue);
 	~Room();

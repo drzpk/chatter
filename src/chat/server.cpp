@@ -28,6 +28,7 @@ void Server::start(const std::string& name) {
 	work = true;
 	_worker();
 	feedback_thread = new std::thread(&Server::_msg_redirector, this);
+	room->setLocalMember(name);
 	Client::start(name);
 }
 
