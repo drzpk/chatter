@@ -248,7 +248,9 @@ void Client::_worker() {
 						sendMessage(disconnect);
 					}
 					_locker.unlock();
-					stop();
+
+					//klient jest zatrzymywany w metodzie start()
+					//stop();
 					return;
 				}
 				else

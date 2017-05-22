@@ -67,8 +67,12 @@ void Room::addMessage(Message* message) {
 }
 
 void Room::stop() {
-    work = false;
-	worker_thread->join();
+	if (!work)
+		return;
+
+	work = false;
+	if (worker_thread->joinable())
+		worker_thread->join();
 	delete worker_thread;
 }
 
