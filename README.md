@@ -12,3 +12,4 @@ Pierwszym krokiem jest pobranie i kompilacja bibliotek [Boost](https://dl.bintra
 Jeśli ktoś nie jest zainteresowany ręczną kompilacją programu, może pobrać gotowe pliki wykonywalne dla systemu Windows:
 
 * [v1.0a](https://drive.google.com/file/d/0ByHjPTrDWEJ1VkVndmxWWUIzZjQ/view?usp=sharing)
+* [v1.1a](https://drive.google.com/file/d/0ByHjPTrDWEJ1dndILUIzY2JHX3c/view?usp=sharing)
