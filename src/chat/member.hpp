@@ -17,45 +17,31 @@ private:
 	std::string out_buffer_data;
 
 public:
-    /**
-     * Tworzy zdalną instancję członka czatu.
-     */
+    // Tworzy zdalną instancję członka czatu.
     Member(asio::ip::tcp::socket* socket, std::queue<Message*>* msgQueue);
 
-    /**
-     * Tworzy lokalną instancję członka czatu (członek znajdujący się na
-     * maszynie, na której uruchomiono serwer).
-     */
+    // Tworzy lokalną instancję członka czatu (członek znajdujący się na
+    // maszynie, na której uruchomiono serwer).
     explicit Member(const std::string& name);
 
     ~Member();
 
-    /**
-     * Wysyła nową wiadomość do klienta.
-     */
+    //  Wysyła nową wiadomość do klienta.
     void sendMessage(Message& message);
 
 	// Wysyła wiadomość do klienta, synchronicznie.
 	void sendMessageSync(Message& message);
 
-    /**
-     * Zwraca gniazdo sieciowe.
-     */
+    // Zwraca gniazdo sieciowe.
     asio::ip::tcp::socket* getSocket() const;
 
-    /**
-     * Ustawia nazwę klienta.
-     */
+    // Ustawia nazwę klienta.
     void setName(const std::string& name);
 
-    /**
-     * Zwraca nazwę członka czatu.
-     */
+    // Zwraca nazwę członka czatu.
     std::string getName() const;
 
-    /**
-     * Podaje, czy członek jest lokalny, czy zdalny.
-     */
+    // Podaje, czy członek jest lokalny, czy zdalny.
     bool isRemote() const;
 
 private:
