@@ -94,9 +94,13 @@ void Client::stop() {
 	if (!work)
 		return;
 	work = false;
-	socket->cancel();
-	socket->shutdown(socket->shutdown_both);
+	
 	try {
+		//przy zamykaniu gniazda mogą wystąpić wyjątki
+		//np. gdy połączenie z serwerem nie zostało ustanowione.
+
+		socket->cancel();
+		socket->shutdown(socket->shutdown_both);
 		socket->close();
 	}
 	catch (...) {}
