@@ -29,6 +29,8 @@
     >> CHAT
     Zawiera wiadomość czatu (w polu 'content'). Może być
     wysłana zarówno przez klienta jak i przez serwer.
+	W przypadku rozsyłania wiadomości do klientów przez 
+	serwer, pole 'meta' zawiera nick autora wiadomości.
 
 	>> SERVER
 	Może zawierać różne informacje wysyłane przez serwer,

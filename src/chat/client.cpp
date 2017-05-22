@@ -107,7 +107,7 @@ void Client::displayMessage(Message* message) {
 	case MessageType::CHAT: {
 		_locker.lock();
 		//todo: dodanie czasu odebrania wiadomości
-		std::string sender = message->getSender() == name ? "Ty" : message->getSender();
+		std::string sender = message->getMeta() == name ? "Ty" : message->getMeta();
 		printf("\r[%s]: %s\n%s%s", sender.c_str(), message->getContent().c_str(), PROMPT_PREFIX, pending_msg.c_str());
 		_locker.unlock();
 		break;
@@ -261,7 +261,7 @@ void Client::_worker() {
 
 				//wysłanie wiadomości
 				Message* message = new Message(MessageType::CHAT);
-				message->setSender(name);
+				message->setMeta(name);
 				message->setContent(pending_msg);
 				pending_msg.clear();
 				sendMessage(message);

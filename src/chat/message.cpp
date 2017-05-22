@@ -68,14 +68,6 @@ unsigned int Message::getId() {
     return id;
 }
 
-void Message::setSender(const std::string& sender) {
-    this->sender = sender;
-}
-
-std::string Message::getSender() {
-    return sender;
-}
-
 void Message::setContent(std::string content) {
     this->content = content.substr(0, MAX_CONTENT_LENGTH);
 }

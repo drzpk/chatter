@@ -19,8 +19,6 @@ private:
 	// dodatkowe dane wiadomości
 	std::string meta;
 
-	// nazwa autora wiadomości (nie wysyłana przez sieć)
-    std::string sender;
 	// gniazdo sieciowe (użytek wewnętrzny)
 	asio::ip::tcp::socket* socket;
 
@@ -39,10 +37,6 @@ public:
      // Ustawia identyfikator wiadomości
     void setId(unsigned int id);
     unsigned int getId();
-
-    // Ustawia nadawcę
-    void setSender(const std::string& sender);
-    std::string getSender();
 
     // Ustawia zawartość
     void setContent(std::string content);

@@ -91,7 +91,10 @@ void Member::_read_handler(const system::error_code& ec, std::size_t tr) {
 	try {
 		Message* msg = new Message(data);
 		msg->setSocket(socket);
-		msg->setSender(name);
+		if (msg->getType() == MessageType::CHAT) {
+			//wiadomość czatu ma ustawioną nazwę użytkownika w polu 'meta'
+			msg->setMeta(name);
+		}
 		//dodaj wiadomość do kolejki
 		_locker.lock();
 		msgQueue->push(msg);
