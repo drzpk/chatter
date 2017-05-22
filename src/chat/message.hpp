@@ -63,6 +63,8 @@ enum MessageType {
 	ECHO = 3,
 	CHAT = 4,
 	SERVER = 5,
+	ONLINE = 6,
+	UPTIME = 7,
 
 	//poniższe typy wiadomości są wewnętrzne, tj. nie będą wysyłane przez sieć.
 	WRITE = 10,

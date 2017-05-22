@@ -5,6 +5,9 @@ Room::Room(std::queue<Message*>* feedback_queue) {
 
     work = true;
     worker_thread = new std::thread(&Room::_worker, this);
+
+	//ustawienie czasu uruchomienia serwera
+	start_time = std::chrono::system_clock::now();
 }
 
 Room::~Room() {
@@ -245,6 +248,60 @@ void Room::_worker() {
 				broadcastMessage(msg);
 				del = false;
 				break;
+			case MessageType::ONLINE: {
+				asio::ip::tcp::socket* socket = msg->getSocket();
+				if (!socket)
+					break;
+				Member* member = *_get_member_by_socket(members, socket);
+				write("Wyslano informacje o uzytkownikach online", true, socket);
+
+				Message* onlineMessage = new Message(MessageType::SERVER);
+				onlineMessage->setContent("Liczba osob podlaczonych do serwera: " + lexical_cast<std::string>(members.size()));
+
+				if (member->isRemote()) {
+					member->sendMessage(*onlineMessage);
+					delete onlineMessage;
+				}
+				else
+					feedback_queue->push(onlineMessage);
+				break;
+			}
+			case MessageType::UPTIME: {
+				asio::ip::tcp::socket* socket = msg->getSocket();
+				if (!socket)
+					break;
+				Member* member = *_get_member_by_socket(members, socket);
+				write("Wyslano informacje o czasie dzialania serwera", true, socket);
+
+				std::chrono::duration<double> elapsed = std::chrono::system_clock::now() - start_time;
+				int hours = elapsed.count() / (60 * 60);
+				int minutes = ((int)elapsed.count() % (60 * 60)) / 60;
+				int seconds = (int)elapsed.count() % 60;
+				char buffer[64] = { 0 };
+				sprintf_s(buffer, 59, "Czas dzialania serwera: %dh %dmin %dsec", hours, minutes, seconds);
+
+				Message* uptimeMessage = new Message(MessageType::SERVER);
+				uptimeMessage->setContent(std::string(buffer));
+
+				if (member->isRemote()) {
+					member->sendMessage(*uptimeMessage);
+					delete uptimeMessage;
+				}
+				else
+					feedback_queue->push(uptimeMessage);
+				break;
+			}
+			default: {
+				asio::ip::tcp::socket* socket = msg->getSocket();
+				if (!socket)
+					break;
+				Member* member = *_get_member_by_socket(members, socket);
+				write("Nieznany typ wiadomosci: " + lexical_cast<std::string>(msg->getType()), true, socket);
+
+				Message unknownMessage(MessageType::SERVER);
+				unknownMessage.setContent("Nieznany typ wiadomosci");
+				member->sendMessage(unknownMessage);
+			}
 			}
 			if (del)
 				delete msg;

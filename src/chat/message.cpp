@@ -45,16 +45,9 @@ Message::Message(const std::string& encoded) /*throw (std::invalid_argument&)*/ 
     }
 
     //sprawdzenie, czy kod wiadomosci jest poprawny
-    switch (code) {
-    case MessageType::CONNECT:
-    case MessageType::DISCONNECT:
-    case MessageType::ECHO:
-    case MessageType::CHAT:
-	case MessageType::SERVER:
-        break;
-    default:
+	if (code < 1 || code > 7)
         throw std::invalid_argument("Niepoprawny kod wiadomości.");
-    }
+    
 
 	setContent(segments[3]);
     setMeta(segments[4]);

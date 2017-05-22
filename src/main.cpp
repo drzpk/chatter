@@ -10,7 +10,7 @@
 #define PARAM_DEBUG		9
 #define PARAM_HELP		10
 
-#define VERSION "1.0a"
+#define VERSION "1.1a"
 
 #define PORT 9000
 

@@ -37,6 +37,13 @@
 	np. informacje o podłączeniu klienta, wynik jakiegoś
 	zapytania wysłanego przez klienta itp. Zawartością
 	tej wiadomości jest gotowa do wyświetlenia odpowiedź.
+
+	>> ONLINE
+	Żądanie zwrócenia ilości/listy osób online wysyłane
+	do serwera.
+
+	>> UPTIME
+	Żądanie zwrócenia czasu działania serwera.
 */
 
 class Room {
@@ -47,6 +54,7 @@ private:
     std::vector<Member*> members;
 
 	std::thread* worker_thread;
+	std::chrono::time_point<std::chrono::system_clock> start_time;
 
     bool work;
 	unsigned int max_clients = 5;

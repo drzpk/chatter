@@ -33,7 +33,7 @@ void Member::sendMessage(Message& message) {
 		throw std::runtime_error("nie mozna wyslac wiadomosci przez siec do klienta lokalnego");
 
 	out_buffer_data = message.encode();
-    asio::async_write(*socket, asio::buffer(out_buffer_data), [this](const system::error_code& ec, std::size_t tr) {
+	asio::async_write(*socket, asio::buffer(out_buffer_data), [this](const system::error_code& ec, std::size_t tr) {
 		if (ec)
 			check_if_disconnected(ec);
 	});
@@ -102,7 +102,8 @@ void Member::_read_handler(const system::error_code& ec, std::size_t tr) {
 	}
 	catch (const std::invalid_argument& e) {
 		//wiadomosc jest niepoprawna
-		std::cout << "blaad: " << e.what();
+		if (_debug)
+			std::cout << "#DEBUG: blad dekodowania wiadomosci: " << e.what() << "\n";
 	}
 
 	_reader();

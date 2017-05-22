@@ -131,6 +131,9 @@ void Client::displayMessage(Message* message) {
 		stop();
 		break;
 	}
+	case MessageType::SERVER:
+		write("# " + message->getContent());
+		break;
 	case MessageType::WRITE:
 		write(message->getContent());
 		break;
@@ -150,8 +153,6 @@ void Client::sendMessage(Message* message) {
 }
 
 void Client::write(const std::string& msg) {
-	//todo: uwzględnienie wiadomości, które zajmują więcej, niż jedną linię w konsoli
-
 	bool condition = msg.size() && (msg[0] == '\n' || msg[msg.size() - 1] == '\n');
 	std::string* msg2;
 	if (condition) {
@@ -242,8 +243,13 @@ void Client::_worker() {
 				_locker.lock();
 
 				std::cout << "\n";
-				if (pending_msg == ":help")
-					std::cout << "Obecnie nie jest dostepna zadna pomoc";
+				if (pending_msg == ":help") {
+					std::cout << "Dostepne komendy specjalne:\n"
+						<< "  :help - wyswietla ten tekst pomocy\n"
+						<< "  :quit - wychodzi z programu\n"
+						<< "  :online - wyswietla podlaczonych klientow\n"
+						<< "  :uptime - wyswietla czas dzialania serwera\n";
+				}
 				else if (pending_msg == ":quit") {
 					std::cout << "Zatrzymywanie programu...";
 					if (is_remote) {
@@ -255,6 +261,14 @@ void Client::_worker() {
 					//klient jest zatrzymywany w metodzie start()
 					//stop();
 					return;
+				}
+				else if (pending_msg == ":online") {
+					Message* online = new Message(MessageType::ONLINE);
+					sendMessage(online);
+				}
+				else if (pending_msg == ":uptime") {
+					Message* uptime = new Message(MessageType::UPTIME);
+					sendMessage(uptime);
 				}
 				else
 					std::cout << "\nNie znaleziono polecenia. Napisz ':help', aby uzyskac liste dostepnych polecen";
