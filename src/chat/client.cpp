@@ -8,6 +8,9 @@ Client::Client(asio::io_service* service) {
 	socket = new asio::ip::tcp::socket(*service);
 	worker_thread = 0;
 
+	//rezerwacja pamięci w celu optymalizacji
+	pending_msg.reserve(Message::MAX_CONTENT_LENGTH);
+
 	conn_started = false;
 	completed = false;
 }
@@ -285,10 +288,12 @@ void Client::_worker() {
 			}
 		}
 		else {
-			pending_msg += c;
-			_locker.lock();
-			std::cout << c;
-			_locker.unlock();
+			if (pending_msg.size() <= Message::MAX_CONTENT_LENGTH) {
+				pending_msg += c;
+				_locker.lock();
+				std::cout << c;
+				_locker.unlock();
+			}
 		}
 	}
 }
