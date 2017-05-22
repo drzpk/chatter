@@ -181,13 +181,14 @@ void Client::debugWrite(const std::string& msg) {
 void Client::_read_msg() {
 	asio::async_read_until(*socket, buffer, Message::BRAKE, [this](const system::error_code& ec, std::size_t st) {
 		//bool finish = ec == asio::error::eof;
-		if (ec /*&& /finish*/) {
+		if (ec) {
+			if (!work)
+				return;
+
+			write("Utracono polaczenie z serwerem.");
+			debugWrite("Kod bledu: " + lexical_cast<std::string>(ec.value()));
+			debugWrite("Opis: " + ec.message());
 			_locker.lock();
-			std::cout << "\nUtracono polaczenie z serwerem.";
-			if (_debug) {
-				std::cout << "  Kod bledu: " << ec.value()
-					<< "\n  Opis bledu: " << ec.message();
-			}
 			std::cout << "\n\nNacisnij dowolny klawisz, aby kontynuowac...\n";
 			_locker.unlock();
 			stop();
@@ -243,7 +244,7 @@ void Client::_worker() {
 						sendMessage(disconnect);
 					}
 					_locker.unlock();
-					work = false;
+					stop();
 					return;
 				}
 				else
